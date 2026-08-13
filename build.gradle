@@ -30,11 +30,19 @@ dependencies {
 
     // 3. Kafka (Event streaming)
     implementation 'org.springframework.kafka:spring-kafka'
+    
+    // Lombok Configuration (Compile Only & Annotation Processor)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    
 }
 
 tasks.named('test') {
