@@ -8,6 +8,7 @@ import com.example.demo.model.Student;
 import com.example.demo.repository.StudentRepository;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service
 public class StudentService {
@@ -52,5 +53,49 @@ public class StudentService {
         redisTemplate.opsForValue().set(cacheKey, student, Duration.ofMinutes(10));
 
         return student;
+    }
+
+    public List<Student> getAllStudents() {
+        return repository.findAll();
+    }
+
+    public Student updateStudent(String id, Student studentDetails) {
+        String cacheKey = "student:" + id;
+
+        // 1. Find existing student
+        Student student = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        // 2. Update fields
+        student.setName(studentDetails.getName());
+        student.setEmail(studentDetails.getEmail());
+
+        // 3. Save to MongoDB
+        Student updated = repository.save(student);
+
+        // 4. Update Redis Cache
+        redisTemplate.opsForValue().set(cacheKey, updated, Duration.ofMinutes(10));
+
+        // 5. Publish event to Kafka
+        kafkaTemplate.send("student-events", updated.getId(), "Updated student with ID: " + updated.getId() + " and name " + updated.getName());
+
+        return updated;
+    }
+
+    public void deleteStudent(String id) {
+        String cacheKey = "student:" + id;
+
+        // 1. Check if student exists
+        Student student = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        // 2. Delete from MongoDB
+        repository.deleteById(id);
+
+        // 3. Remove from Redis Cache
+        redisTemplate.delete(cacheKey);
+
+        // 4. Publish event to Kafka
+        kafkaTemplate.send("student-events", id, "Deleted student with ID: " + id + " and name " + student.getName());
     }
 }

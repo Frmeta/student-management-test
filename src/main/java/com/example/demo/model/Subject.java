@@ -1,16 +1,19 @@
 package com.example.demo.model;
 
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.io.Serializable;
-import lombok.Getter;
-import lombok.Setter;
 
-@Document(collection = "students")
+import lombok.Setter;
+import lombok.Getter;
+
+@Document(collection = "subjects")
 @Getter @Setter
-public class Student implements Serializable {
+public class Subject implements Serializable {
     @Id
     private String id;
     private String name;
-    private String email;
+    private String description;
+    private String numberOfCredit;
 }

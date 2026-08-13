@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 import com.example.demo.model.Student;
 import com.example.demo.service.StudentService;
@@ -24,5 +25,20 @@ public class StudentController {
     @GetMapping("/{id}")
     public Student getStudent(@PathVariable String id) {
         return service.getStudentById(id);
+    }
+
+    @GetMapping
+    public List<Student> getAllStudents() {
+        return service.getAllStudents();
+    }
+
+    @PutMapping("/{id}")
+    public Student updateStudent(@PathVariable String id, @RequestBody Student studentDetails) {
+        return service.updateStudent(id, studentDetails);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteStudent(@PathVariable String id) {
+        service.deleteStudent(id);
     }
 }
