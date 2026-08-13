@@ -29,7 +29,7 @@ public class StudentService {
         Student saved = repository.save(student);
 
         // 2. Publish event to Kafka
-        kafkaTemplate.send("student-events", "Created student with ID: " + saved.getId());
+        kafkaTemplate.send("student-events", saved.getId(), "Created student with ID: " + saved.getId() + " and name " + saved.getName());
 
         return saved;
     }
