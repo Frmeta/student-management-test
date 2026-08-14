@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.config.KafkaConfig;
 import com.example.demo.model.Student;
 import com.example.demo.repository.StudentRepository;
 
@@ -17,8 +19,8 @@ public class StudentService {
     private final RedisTemplate<String, Student> redisTemplate;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public StudentService(StudentRepository repository, 
-                          RedisTemplate<String, Student> redisTemplate, 
+    public StudentService(StudentRepository repository,
+                          @Qualifier("studentRedisTemplate") RedisTemplate<String, Student> redisTemplate,
                           KafkaTemplate<String, String> kafkaTemplate) {
         this.repository = repository;
         this.redisTemplate = redisTemplate;
@@ -30,7 +32,7 @@ public class StudentService {
         Student saved = repository.save(student);
 
         // 2. Publish event to Kafka
-        kafkaTemplate.send("student-events", saved.getId(), "Created student with ID: " + saved.getId() + " and name " + saved.getName());
+        kafkaTemplate.send(KafkaConfig.STUDENT_EVENT_TOPIC, saved.getId(), "Created student with ID: " + saved.getId() + " and name " + saved.getName());
 
         return saved;
     }
@@ -77,7 +79,7 @@ public class StudentService {
         redisTemplate.opsForValue().set(cacheKey, updated, Duration.ofMinutes(10));
 
         // 5. Publish event to Kafka
-        kafkaTemplate.send("student-events", updated.getId(), "Updated student with ID: " + updated.getId() + " and name " + updated.getName());
+        kafkaTemplate.send(KafkaConfig.STUDENT_EVENT_TOPIC, updated.getId(), "Updated student with ID: " + updated.getId() + " and name " + updated.getName());
 
         return updated;
     }
@@ -96,6 +98,6 @@ public class StudentService {
         redisTemplate.delete(cacheKey);
 
         // 4. Publish event to Kafka
-        kafkaTemplate.send("student-events", id, "Deleted student with ID: " + id + " and name " + student.getName());
+        kafkaTemplate.send(KafkaConfig.STUDENT_EVENT_TOPIC, id, "Deleted student with ID: " + id + " and name " + student.getName());
     }
 }

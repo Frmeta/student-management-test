@@ -1,6 +1,9 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.kafka.core.KafkaTemplate;
+
+import com.example.demo.config.KafkaConfig;
 import com.example.demo.model.Enrollment;
 import com.example.demo.repository.EnrollmentRepository;
 import java.util.List;
@@ -9,13 +12,17 @@ import java.util.List;
 public class EnrollmentService {
 
     private final EnrollmentRepository repository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public EnrollmentService(EnrollmentRepository repository) {
+    public EnrollmentService(EnrollmentRepository repository, KafkaTemplate<String, String> kafkaTemplate) {
         this.repository = repository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public Enrollment createEnrollment(Enrollment enrollment) {
-        return repository.save(enrollment);
+        Enrollment saved = repository.save(enrollment);
+        kafkaTemplate.send(KafkaConfig.ENROLLMENT_EVENT_TOPIC, saved.getId(), "Created enrollment with ID: " + saved.getId() + " for Student: " + saved.getStudentId() + " Subject: " + saved.getSubjectId());
+        return saved;
     }
 
     public List<Enrollment> getAllEnrollments() {
@@ -45,13 +52,15 @@ public class EnrollmentService {
         enrollment.setMidtermExamScore(enrollmentDetails.getMidtermExamScore());
         enrollment.setFinalTermExamScore(enrollmentDetails.getFinalTermExamScore());
 
-        return repository.save(enrollment);
+        Enrollment updated = repository.save(enrollment);
+        kafkaTemplate.send(KafkaConfig.ENROLLMENT_EVENT_TOPIC, updated.getId(), "Updated enrollment with ID: " + updated.getId() + " for Student: " + updated.getStudentId() + " Subject: " + updated.getSubjectId());
+        return updated;
     }
 
     public void deleteEnrollment(String id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Enrollment not found");
-        }
+        Enrollment enrollment = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
         repository.deleteById(id);
+        kafkaTemplate.send(KafkaConfig.ENROLLMENT_EVENT_TOPIC, id, "Deleted enrollment with ID: " + id + " for Student: " + enrollment.getStudentId() + " Subject: " + enrollment.getSubjectId());
     }
 }

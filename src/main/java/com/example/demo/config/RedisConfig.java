@@ -8,25 +8,36 @@ import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import com.example.demo.model.Student;
+import com.example.demo.model.Subject;
 
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    public RedisTemplate<String, Student> redisTemplate(RedisConnectionFactory connectionFactory) {
+    @Bean(name = "studentRedisTemplate")
+    public RedisTemplate<String, Student> studentRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Student> template = new RedisTemplate<>();
+        configureTemplate(template, connectionFactory);
+        return template;
+    }
+
+    @Bean(name = "subjectRedisTemplate")
+    public RedisTemplate<String, Subject> subjectRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Subject> template = new RedisTemplate<>();
+        configureTemplate(template, connectionFactory);
+        return template;
+    }
+
+    private <T> void configureTemplate(RedisTemplate<String, T> template, RedisConnectionFactory connectionFactory) {
         template.setConnectionFactory(connectionFactory);
 
-        // Key serializer
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
-
-        // Value serializer using JDK serialization (Student implements Serializable)
+        StringRedisSerializer stringSerializer = new StringRedisSerializer();
         JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
+
+        template.setKeySerializer(stringSerializer);
+        template.setHashKeySerializer(stringSerializer);
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(serializer);
 
         template.afterPropertiesSet();
-        return template;
     }
 }

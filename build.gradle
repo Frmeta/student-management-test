@@ -30,7 +30,8 @@ dependencies {
 
     // 3. Kafka (Event streaming)
     implementation 'org.springframework.kafka:spring-kafka'
-    
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
     // Lombok Configuration (Compile Only & Annotation Processor)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

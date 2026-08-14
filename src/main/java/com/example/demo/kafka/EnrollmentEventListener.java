@@ -9,34 +9,35 @@ import org.springframework.stereotype.Component;
 import com.example.demo.config.KafkaConfig;
 
 @Component
-public class StudentEventListener {
+public class EnrollmentEventListener {
     
-    private static final Logger logger = LoggerFactory.getLogger(StudentEventListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(EnrollmentEventListener.class);
 
-    @KafkaListener(topics = KafkaConfig.STUDENT_EVENT_TOPIC, groupId = "student-group")
-    public void handleStudentEvent(ConsumerRecord<String, String> record) {
+    @KafkaListener(topics = KafkaConfig.ENROLLMENT_EVENT_TOPIC, groupId = "enrollment-group")
+    public void handleEnrollmentEvent(ConsumerRecord<String, String> record) {
         try {
             String key = record.key();
             String message = record.value();
             long timestamp = record.timestamp();
             
-            logger.info("=== Student Event Consumed ===");
+            logger.info("=== Enrollment Event Consumed ===");
             logger.info("Topic: {}", record.topic());
             logger.info("Partition: {}", record.partition());
             logger.info("Offset: {}", record.offset());
             logger.info("Key: {}", key);
             logger.info("Message: {}", message);
             logger.info("Timestamp: {}", timestamp);
-            logger.info("===============================");
+            logger.info("==================================");
             
             // TODO: Implement business logic here
             // Examples:
             // - Persist event to audit log database
-            // - Trigger side-effects (send notifications, update external systems, etc.)
-            // - Update cache based on event type
+            // - Trigger notifications (email student about enrollment)
+            // - Update external systems
+            // - Validate enrollment constraints
             
         } catch (Exception e) {
-            logger.error("Error processing student event: {}", record.value(), e);
+            logger.error("Error processing enrollment event: {}", record.value(), e);
             throw e;
         }
     }
