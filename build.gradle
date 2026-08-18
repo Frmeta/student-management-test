@@ -27,6 +27,7 @@ dependencies {
 
     // 2. Redis (Caching layer)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     // 3. Kafka (Event streaming)
     implementation 'org.springframework.kafka:spring-kafka'
