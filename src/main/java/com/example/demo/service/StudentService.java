@@ -1,16 +1,17 @@
 package com.example.demo.service;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.config.KafkaConfig;
+import com.example.demo.exception.custom.StudentNotFoundException;
 import com.example.demo.model.Student;
 import com.example.demo.repository.StudentRepository;
-
-import java.time.Duration;
-import java.util.List;
 
 @Service
 public class StudentService {
@@ -49,7 +50,7 @@ public class StudentService {
 
         // 2. Fallback to MongoDB
         System.out.println("Fetched from MongoDB");
-        Student student = repository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
+        Student student = repository.findById(id).orElseThrow(() -> new StudentNotFoundException("Student with id " + id + " not found"));
 
         // 3. Store in Redis for 10 minutes
         redisTemplate.opsForValue().set(cacheKey, student, Duration.ofMinutes(10));
@@ -66,7 +67,7 @@ public class StudentService {
 
         // 1. Find existing student
         Student student = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student with id " + id + " not found"));
 
         // 2. Update fields
         student.setName(studentDetails.getName());
@@ -89,7 +90,7 @@ public class StudentService {
 
         // 1. Check if student exists
         Student student = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student with id " + id + " not found"));
 
         // 2. Delete from MongoDB
         repository.deleteById(id);

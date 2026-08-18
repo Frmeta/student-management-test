@@ -1,12 +1,14 @@
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
+
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
 import com.example.demo.config.KafkaConfig;
+import com.example.demo.exception.custom.EnrollmentNotFoundException;
 import com.example.demo.model.Enrollment;
 import com.example.demo.repository.EnrollmentRepository;
-import java.util.List;
 
 @Service
 public class EnrollmentService {
@@ -31,7 +33,7 @@ public class EnrollmentService {
 
     public Enrollment getEnrollmentById(String id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new EnrollmentNotFoundException("Enrollment with id " + id +" not found"));
     }
 
     public List<Enrollment> getEnrollmentsByStudentId(String studentId) {
@@ -44,7 +46,7 @@ public class EnrollmentService {
 
     public Enrollment updateEnrollment(String id, Enrollment enrollmentDetails) {
         Enrollment enrollment = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new EnrollmentNotFoundException("Enrollment with id " + id + " not found"));
 
         enrollment.setStudentId(enrollmentDetails.getStudentId());
         enrollment.setSubjectId(enrollmentDetails.getSubjectId());
@@ -59,7 +61,7 @@ public class EnrollmentService {
 
     public void deleteEnrollment(String id) {
         Enrollment enrollment = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new EnrollmentNotFoundException("Enrollment with id " + id + " not found"));
         repository.deleteById(id);
         kafkaTemplate.send(KafkaConfig.ENROLLMENT_EVENT_TOPIC, id, "Deleted enrollment with ID: " + id + " for Student: " + enrollment.getStudentId() + " Subject: " + enrollment.getSubjectId());
     }

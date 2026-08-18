@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.config.KafkaConfig;
-import com.example.demo.model.Student;
+import com.example.demo.exception.custom.SubjectNotFoundException;
 import com.example.demo.model.Subject;
 import com.example.demo.repository.SubjectRepository;
-
-import java.time.Duration;
-import java.util.List;
 
 @Service
 public class SubjectService {
@@ -45,7 +45,7 @@ public class SubjectService {
         }
         // 2. Fallback to MongoDB
         System.out.println("Fetched from MongoDB");
-        Subject subject = repository.findById(id).orElseThrow(() -> new RuntimeException("Subject not found"));
+        Subject subject = repository.findById(id).orElseThrow(() -> new SubjectNotFoundException("Subject with id " + id + " not found"));
 
         // 3. Store in Redis for 10 minutes
         redisTemplate.opsForValue().set(cacheKey, subject, Duration.ofMinutes(10));
@@ -61,7 +61,7 @@ public class SubjectService {
         String cacheKey = "subject:" + id;
         
         Subject subject = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+                .orElseThrow(() -> new SubjectNotFoundException("Subject with id " + id + " not found"));
 
         subject.setName(subjectDetails.getName());
         subject.setDescription(subjectDetails.getDescription());
@@ -82,7 +82,7 @@ public class SubjectService {
         String cacheKey = "subject:" + id;
         
         Subject subject = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+                .orElseThrow(() -> new SubjectNotFoundException("Subject with id " + id + " not found"));
         
         repository.deleteById(id);
         
