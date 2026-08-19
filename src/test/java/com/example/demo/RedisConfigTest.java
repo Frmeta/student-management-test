@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 import com.example.demo.config.RedisConfig;
@@ -21,7 +21,7 @@ class RedisConfigTest {
 
         RedisTemplate<String, Student> template = config.studentRedisTemplate(connectionFactory);
 
-        assertThat(template.getValueSerializer()).isInstanceOf(GenericJackson2JsonRedisSerializer.class);
+        assertThat(template.getValueSerializer()).isInstanceOf(JacksonJsonRedisSerializer.class);
 
         Student student = new Student();
         student.setId("s-1");
