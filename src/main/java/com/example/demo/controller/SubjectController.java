@@ -21,7 +21,7 @@ public class SubjectController {
     }
 
     @GetMapping("/{id}")
-    public Subject getSubject(@PathVariable String id) {
+    public Subject getSubject(@PathVariable("id") String id) {
         return service.getSubjectById(id);
     }
 
@@ -31,12 +31,12 @@ public class SubjectController {
     }
 
     @PutMapping("/{id}")
-    public Subject updateSubject(@PathVariable String id, @RequestBody Subject subjectDetails) {
+    public Subject updateSubject(@PathVariable("id") String id, @RequestBody Subject subjectDetails) {
         return service.updateSubject(id, subjectDetails);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSubject(@PathVariable String id) {
+    public void deleteSubject(@PathVariable("id") String id) {
         service.deleteSubject(id);
     }
 }

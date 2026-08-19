@@ -26,26 +26,26 @@ public class EnrollmentController {
     }
 
     @GetMapping("/{id}")
-    public Enrollment getEnrollment(@PathVariable String id) {
+    public Enrollment getEnrollment(@PathVariable("id") String id) {
         return service.getEnrollmentById(id);
     }
 
     @GetMapping("/student/{studentId}")
-    public List<Enrollment> getEnrollmentsByStudent(@PathVariable String studentId) {
+    public List<Enrollment> getEnrollmentsByStudent(@PathVariable("studentId") String studentId) {
         return service.getEnrollmentsByStudentId(studentId);
     }
 
     @GetMapping("/subject/{subjectId}")
-    public List<Enrollment> getEnrollmentsBySubject(@PathVariable String subjectId) {
+    public List<Enrollment> getEnrollmentsBySubject(@PathVariable("subjectId") String subjectId) {
         return service.getEnrollmentsBySubjectId(subjectId);
     }
     @PutMapping("/{id}")
-    public Enrollment updateEnrollment(@PathVariable String id, @RequestBody Enrollment enrollmentDetails) {
+    public Enrollment updateEnrollment(@PathVariable("id") String id, @RequestBody Enrollment enrollmentDetails) {
         return service.updateEnrollment(id, enrollmentDetails);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteEnrollment(@PathVariable String id) {
+    public void deleteEnrollment(@PathVariable("id") String id) {
         service.deleteEnrollment(id);
     }
 }
