@@ -1,13 +1,15 @@
 package com.example.demo.exception;
-
 import java.time.Instant;
 
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import com.example.demo.exception.custom.EnrollmentNotFoundException;
 import com.example.demo.exception.custom.StudentNotFoundException;
 import com.example.demo.exception.custom.SubjectNotFoundException;
+import com.mongodb.MongoTimeoutException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -29,5 +31,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EnrollmentNotFoundException.class)
     public ExceptionResponse handleEnrollmentNotFoundException(Exception ex, HttpServletRequest request){
         return new ExceptionResponse(Instant.now(), 404, request.getRequestURI(), "Enrollment Not Found", ex.getMessage());
+    }
+    @ExceptionHandler({MongoTimeoutException.class, DataAccessResourceFailureException.class})
+    public ExceptionResponse handleMongoDisconnected(Exception ex) {
+        return new ExceptionResponse(Instant.now(), 404, null, "MongoDB disconnected", ex.getMessage());
     }
 }
