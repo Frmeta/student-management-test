@@ -21,6 +21,8 @@ dependencies {
 	// Core Spring Boot Dependencies
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj'
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.3.0'
 
     // 1. MongoDB (Database persistence)
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'

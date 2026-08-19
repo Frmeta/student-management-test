@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import com.example.demo.config.KafkaConfig;
 import com.example.demo.exception.custom.SubjectNotFoundException;
@@ -14,6 +15,7 @@ import com.example.demo.model.Subject;
 import com.example.demo.repository.SubjectRepository;
 
 @Service
+@CircuitBreaker(name = "database")
 public class SubjectService {
 
     private final SubjectRepository repository;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import com.example.demo.config.KafkaConfig;
 import com.example.demo.exception.custom.EnrollmentNotFoundException;
@@ -11,6 +12,7 @@ import com.example.demo.model.Enrollment;
 import com.example.demo.repository.EnrollmentRepository;
 
 @Service
+@CircuitBreaker(name = "database")
 public class EnrollmentService {
 
     private final EnrollmentRepository repository;

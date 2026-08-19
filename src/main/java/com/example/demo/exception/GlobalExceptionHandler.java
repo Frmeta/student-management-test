@@ -10,6 +10,7 @@ import com.example.demo.exception.custom.EnrollmentNotFoundException;
 import com.example.demo.exception.custom.StudentNotFoundException;
 import com.example.demo.exception.custom.SubjectNotFoundException;
 import com.mongodb.MongoTimeoutException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -33,7 +34,16 @@ public class GlobalExceptionHandler {
         return new ExceptionResponse(Instant.now(), 404, request.getRequestURI(), "Enrollment Not Found", ex.getMessage());
     }
     @ExceptionHandler({MongoTimeoutException.class, DataAccessResourceFailureException.class})
-    public ExceptionResponse handleMongoDisconnected(Exception ex) {
-        return new ExceptionResponse(Instant.now(), 404, null, "MongoDB disconnected", ex.getMessage());
+    public ResponseEntity<ExceptionResponse> handleMongoDisconnected(Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ExceptionResponse(Instant.now(), 503, request.getRequestURI(), "MongoDB unavailable", ex.getMessage()));
+    }
+
+    @ExceptionHandler(CallNotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleDatabaseCircuitOpen(CallNotPermittedException ex,
+                                                                         HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ExceptionResponse(Instant.now(), 503, request.getRequestURI(),
+                        "Database circuit breaker open", "Database is temporarily unavailable"));
     }
 }

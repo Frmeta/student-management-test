@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.springframework.core.env.Environment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 public class MongoConfig {
 
     @Bean
-    public MongoClient mongoClient() {
-        String uri = System.getProperty(
-            "spring.data.mongodb.uri",
-            System.getenv().getOrDefault("MONGODB_URI", "mongodb://localhost:27017")
+    public MongoClient mongoClient(Environment environment) {
+        String uri = environment.getProperty(
+            "spring.mongodb.uri",
+            environment.getProperty("MONGODB_URI", "mongodb://localhost:27017/student_db")
         );
 
         MongoClientSettings settings = MongoClientSettings.builder()
