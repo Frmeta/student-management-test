@@ -48,7 +48,7 @@ services:
   scylladb:
     image: scylladb/scylla:latest
     ports:
-      - "9042:9042"
+      - "9043:9042"
     volumes:
       - scylla_data:/var/lib/scylla
     restart: unless-stopped

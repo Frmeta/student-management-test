@@ -31,6 +31,9 @@ dependencies {
     // 2. MongoDB (for student portfolio only)
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+    // ScyllaDB (Cassandra-compatible driver for audit trail)
+    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra'
+
     // 2. Redis (Caching layer)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
