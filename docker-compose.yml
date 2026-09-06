@@ -33,5 +33,28 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     restart: unless-stopped
 
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: student_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  scylladb:
+    image: scylladb/scylla:latest
+    ports:
+      - "9042:9042"
+    volumes:
+      - scylla_data:/var/lib/scylla
+    restart: unless-stopped
+    command: --smp 1 --memory 256M --overprovisioned 1
+
 volumes:
   mongodb_data: {}
+  postgres_data: {}
+  scylla_data: {}
