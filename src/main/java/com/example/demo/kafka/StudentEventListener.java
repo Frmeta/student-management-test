@@ -7,34 +7,34 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.config.KafkaConfig;
+import com.example.demo.service.AuditLogService;
 
 @Component
 public class StudentEventListener {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(StudentEventListener.class);
+    private final AuditLogService auditLogService;
+
+    public StudentEventListener(AuditLogService auditLogService) {
+        this.auditLogService = auditLogService;
+    }
 
     @KafkaListener(topics = KafkaConfig.STUDENT_EVENT_TOPIC, groupId = "student-group")
     public void handleStudentEvent(ConsumerRecord<String, String> record) {
         try {
             String key = record.key();
             String message = record.value();
-            long timestamp = record.timestamp();
-            
-            logger.info("=== Student Event Consumed ===");
-            logger.info("Topic: {}", record.topic());
-            logger.info("Partition: {}", record.partition());
-            logger.info("Offset: {}", record.offset());
+
+            String action = message.contains("Created") ? "CREATE" :
+                            message.contains("Updated") ? "UPDATE" : "DELETE";
+
+            auditLogService.logEvent("STUDENT", key, action, message, "KAFKA");
+
+            logger.info("=== Student Event Processed ===");
             logger.info("Key: {}", key);
             logger.info("Message: {}", message);
-            logger.info("Timestamp: {}", timestamp);
-            logger.info("===============================");
-            
-            // TODO: Implement business logic here
-            // Examples:
-            // - Persist event to audit log database
-            // - Trigger side-effects (send notifications, update external systems, etc.)
-            // - Update cache based on event type
-            
+            logger.info("Audit log saved to ScyllaDB");
+
         } catch (Exception e) {
             logger.error("Error processing student event: {}", record.value(), e);
             throw e;
