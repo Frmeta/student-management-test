@@ -1,16 +1,21 @@
 package com.example.demo.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
-@Document(collection = "students")
+@Entity
+@Table(name = "students")
 @Getter @Setter
 public class Student implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    
+    @Column(nullable = false)
     private String name;
+    
+    @Column(nullable = false, unique = true)
     private String email;
 }
