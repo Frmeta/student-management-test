@@ -1,11 +1,10 @@
 package com.example.demo.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.model.Enrollment;
 import java.util.List;
 
-import com.example.demo.model.Enrollment;
-
-public interface EnrollmentRepository extends MongoRepository<Enrollment, String> {
+public interface EnrollmentRepository extends JpaRepository<Enrollment, String> {
     List<Enrollment> findByStudentId(String studentId);
     List<Enrollment> findBySubjectId(String subjectId);
 }
